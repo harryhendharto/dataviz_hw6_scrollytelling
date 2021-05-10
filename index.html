@@ -6,14 +6,14 @@
     <style>
         .chart-container {
             max-width: 1050px;
-            border: 3px solid red;
+            /* border: 3px solid red; */
             margin: 0 auto;
             /* auto centers the div */
             font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
         }
 
         svg {
-            border: 2px solid purple;
+            /* border: 2px solid purple; */
             overflow: visible;
         }
 
@@ -94,7 +94,7 @@
             font-size: 24px;
             max-width: 60rem;
             margin: 3rem auto;
-            background-color: #f4f4f4;
+            /* background-color: #f4f4f4; */
             padding: 1rem;
             position: relative;
 
@@ -137,7 +137,7 @@
             height: 50vh;
             /* vh is the unit that divdes the viewport in units of 1/100 */
             /* height is 50 vh = half the height of the viewport */
-            background: #969696;
+            /* background: #969696; */
             margin: 0;
             top: 15vh;
             /* this is how high it should be from top */
@@ -156,7 +156,7 @@
         }
 
         #scrolly-overlay .scrolly figure.sticky .bar-inner {
-            width: 10%;
+            width: 50%;
             height: 100%;
             transition: width 1s ease-in-out;
             /* background-color: #daa520; */
@@ -182,13 +182,13 @@
             <!--  sticky graphic   -->
             <figure class='sticky'>
 
-                <div class="container"></div>
-                <div class="chart-container">
+                <div class="container" ></div>
+                        <div class="chart-container">
             
-                    <svg width="950px" height="575px"></svg>
-                    <!-- <p class="source">Note:</p> -->
+                            <svg width="950px" height="575px"></svg>
+                            <!-- <p class="source">Note:</p> -->
             
-                </div>
+                        </div>
 
                 <!-- put your chart stuff here -->
 
@@ -196,6 +196,7 @@
                     
                     <div class='bar-inner'>
 
+                        
                         
                     </div>
                 </div>
@@ -219,7 +220,7 @@
     </section>
 
     <section class='filler'>
-        <h2>End. Keep scrolling!</h2>
+        <!-- <h2>End. Keep scrolling!</h2> -->
  
         <div class="spacer"></div>
         <p>See? The article continued as normal.</p>
@@ -231,10 +232,7 @@
         </p>
         </br>
         </br>
-        
-        <svg width="1050px" height="575px">
-            
-        </svg>
+    
 
     </section>
 </body>
@@ -248,38 +246,6 @@
 <script>
     const container = d3.select('#scrolly-overlay');
     const stepSel = container.selectAll('.step'); //final all the step nodes
-
-    function updateChart(index) {
-        const sel = container.select(`[data-index='${index}']`);
-        // const width = sel.attr('data-width');
-        stepSel.classed('is-active', (d, i) => i === index);
-        // container.select('.chart-container').style('width', width);
-        container.select('.chart-container');
-    }
-
-    function init() {
-
-        enterView({ //our main view function
-            selector: stepSel.nodes(),
-            offset: 0.5, //when the slide is 50% away then trigger your chart
-            enter: el => { //what's supposed to happen when the slide enters?
-                const index = +d3.select(el).attr('series2020'); //extract the data-index attribute. this can be anything: a filter, a date, whatever.
-                updateChart(index);
-            },
-            exit: el => { //what's supposed to happen when the slide exits?
-                let index = +d3.select(el).attr('series2009');
-                index = Math.max(0, index - 1);
-                updateChart(index);
-            }
-        });
-
-    }
-
-    init();
-</script>
-
-<script>
-    console.log({ d3 })
 
     let width = 950;
     let height = 500;
@@ -429,5 +395,89 @@
 
     })
 
+
+
+    function updateChart(index) {
+        const sel = container.select(d);
+        const width = sel.attr('data-width');
+        stepSel.classed('is-active', (d, i) => i === index);
+        // container.select('.bar-inner').style('width', width);
+    }
+
+    function init() {
+
+        enterView({ //our main view function
+            selector: stepSel.nodes(),
+            offset: 0.5, //when the slide is 50% away then trigger your chart
+            enter: el => { //what's supposed to happen when the slide enters?
+                const index = +d3.select(el).filter(d => d.year == 2020); //extract the data-index attribute. this can be anything: a filter, a date, whatever.
+                updateChart(index);
+            },
+            exit: el => { //what's supposed to happen when the slide exits?
+                let index = +d3.select(el).filter(d => d.year == 2020);
+                index = Math.max(0, index - 1);
+                updateChart(index);
+            }
+        });
+
+    }
+
+    init();
 </script>
 
+<script>
+    
+
+</script>
+
+<script type="module">
+    // Import Observable runtime and the @d3/color-legend notebook
+    import {Runtime} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
+    import d3_colorLegend from "https://api.observablehq.com/@d3/color-legend.js?v=3";
+    
+    let sel_cols = [
+            "Medicaid",
+            "Medicare",
+            "Medicare+Medicaid",
+            "Employer",
+            "Uninsured",
+            "Direct Purchase",
+            "Subsidized Exchange",
+            "CHIP",
+            "Military",
+            "Other"]
+
+        let sel_colors = [
+            "#f44336", // "Medicaid",
+            "#FF9800", // "Medicare",
+            "#FDD835", // "Medicare+Medicaid",
+            "#FFF8E1", // "Employer",
+            "#26A69A", // "Uninsured",
+            "#4DD0E1", // "Direct Purchase",
+            "#F06292", // "Subsidized Exchange",
+            "#5C6BC0", // "CHIP",
+            "#90A4AE", // "Military",
+            "#E0E0E0"  // "Other"
+        ]
+    
+    // Example chart data copied from https://observablehq.com/@d3/stacked-area-chart
+    const color = d3.scaleOrdinal()
+        .domain(sel_cols)
+        .range(sel_colors)
+    const margin = ({top: 20, right: 0, bottom: 30, left: 140})
+    
+    // Container element into which the swatches will render
+    const container = document.querySelector(".container")
+    
+    renderSwatches(container)
+      
+    async function renderSwatches(el) {
+      // Get the value of the "swatches" notebook cell, which is the function we want, which returns a DOM element
+      const module = new Runtime().module(d3_colorLegend);
+      const swatches = await module.value("swatches");
+      
+      // Finally, call `swatches` with our options and append it to the container
+      const element = swatches({color, marginLeft: margin.left, columns: "180px"});
+      el.appendChild(element);
+    }
+    </script>
